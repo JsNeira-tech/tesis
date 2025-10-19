@@ -1,0 +1,673 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Autodiagnóstico de Ciberseguridad para PyMEs</title>
+    
+    <!-- Estilos CSS -->
+    <link rel="stylesheet" href="css/styles.css">
+    
+    <!-- Fuentes de Google (opcional, para mejor apariencia) -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <!-- ENCABEZADO -->
+    <header class="header">
+        <div class="container">
+            <div class="logo">
+                <h1>🔒 Autodiagnóstico de Ciberseguridad</h1>
+                <p>Basado en NIST Cybersecurity Framework 2.0</p>
+            </div>
+        </div>
+    </header>
+
+    <!-- CONTENEDOR PRINCIPAL -->
+    <main class="container">
+        
+        <!-- INTRODUCCIÓN -->
+        <section id="intro" class="intro-section">
+            <h2>Bienvenido</h2>
+            <p>Esta herramienta le ayudará a evaluar el nivel de madurez en ciberseguridad de su empresa y generará un plan de acción personalizado basado en el marco NIST CSF 2.0.</p>
+            <p><strong>Duración estimada:</strong> 12-15 minutos</p>
+            <p><strong>Total de preguntas:</strong> 24</p>
+            
+            <div class="help-toggle">
+                <label>
+                    <input type="checkbox" id="toggle-ayuda">
+                    Mostrar ayuda técnica (mapeo a controles NIST)
+                </label>
+            </div>
+            
+            <button class="btn btn-primary" onclick="iniciarCuestionario()">Comenzar Diagnóstico</button>
+        </section>
+
+        <!-- BARRA DE PROGRESO -->
+        <div id="progress-container" class="progress-container" style="display: none;">
+            <div class="progress-header">
+                <h3>Progreso del Diagnóstico</h3>
+                <span id="progress-text">0/24 preguntas completadas (0%)</span>
+            </div>
+            <div class="progress-bar">
+                <div id="progress-fill" class="progress-fill"></div>
+            </div>
+            <div class="progress-sections">
+                <div class="section-item" id="section-0-progress">
+                    <span class="section-icon">⏹</span> Sección 0: Identificación
+                </div>
+                <div class="section-item" id="section-1-progress">
+                    <span class="section-icon">⏹</span> Sección 1: Gobernanza
+                </div>
+                <div class="section-item" id="section-2-progress">
+                    <span class="section-icon">⏹</span> Sección 2: Visibilidad
+                </div>
+                <div class="section-item" id="section-3-progress">
+                    <span class="section-icon">⏹</span> Sección 3: Protección
+                </div>
+                <div class="section-item" id="section-4-progress">
+                    <span class="section-icon">⏹</span> Sección 4: Respuesta
+                </div>
+                <div class="section-item" id="section-5-progress">
+                    <span class="section-icon">⏹</span> Sección 5: Criticidad
+                </div>
+            </div>
+        </div>
+
+        <!-- FORMULARIO DEL CUESTIONARIO -->
+        <form id="cuestionario" style="display: none;">
+            
+            <!-- ============================================ -->
+            <!-- SECCIÓN 0: IDENTIFICACIÓN ORGANIZACIONAL -->
+            <!-- ============================================ -->
+            <section class="section" id="section-0">
+                <div class="section-header">
+                    <h2>Sección 0: Identificación Organizacional</h2>
+                    <p>Información básica sobre su empresa</p>
+                </div>
+
+                <!-- P0.1 - Nombre de la Empresa -->
+                <div class="question">
+                    <label for="P0.1">
+                        <span class="question-number">P0.1</span>
+                        Nombre de la Empresa
+                    </label>
+                    <input type="text" id="P0.1" name="P0.1" placeholder="Mi Empresa" class="input-text">
+                </div>
+
+                <!-- P0.2 - Sector/Actividad Principal -->
+                <div class="question">
+                    <label for="P0.2">
+                        <span class="question-number">P0.2</span>
+                        Sector/Actividad Principal <span class="required">*</span>
+                    </label>
+                    <select id="P0.2" name="P0.2" class="input-select" required>
+                        <option value="">Seleccione un sector</option>
+                        <option value="Retail/Comercio">Retail/Comercio</option>
+                        <option value="Servicios Profesionales">Servicios Profesionales (legal, contable, consultoría)</option>
+                        <option value="Manufactura/Industria">Manufactura/Industria</option>
+                        <option value="Tecnología/Software">Tecnología/Software</option>
+                        <option value="Salud">Salud</option>
+                        <option value="Telecomunicaciones">Telecomunicaciones</option>
+                        <option value="Otro">Otro</option>
+                    </select>
+                    <div class="help-text" data-control="">
+                        💡 Influye en: Contexto para recomendaciones específicas
+                    </div>
+                </div>
+
+                <!-- P0.3 - Número de Empleados -->
+                <div class="question">
+                    <label for="P0.3">
+                        <span class="question-number">P0.3</span>
+                        Número de Empleados <span class="required">*</span>
+                    </label>
+                    <select id="P0.3" name="P0.3" class="input-select" required>
+                        <option value="">Seleccione cantidad</option>
+                        <option value="1-5">1-5 empleados</option>
+                        <option value="6-10">6-10 empleados</option>
+                        <option value="11-25">11-25 empleados</option>
+                        <option value="26-50">26-50 empleados</option>
+                        <option value="51-100">51-100 empleados</option>
+                    </select>
+                    <div class="help-text" data-control="">
+                        💡 Influye en: Determina perfil objetivo (Fases 1-4)
+                    </div>
+                </div>
+
+                <!-- P0.4 - Facturación Anual (UF) -->
+                <div class="question">
+                    <label for="P0.4">
+                        <span class="question-number">P0.4</span>
+                        Facturación Anual (UF) - Clasificación SII Chile <span class="required">*</span>
+                    </label>
+                    <select id="P0.4" name="P0.4" class="input-select" required>
+                        <option value="">Seleccione rango</option>
+                        <option value="Hasta 2.400 UF">Hasta 2.400 UF (microempresa)</option>
+                        <option value="2.401 - 25.000 UF">2.401 - 25.000 UF (pequeña empresa)</option>
+                        <option value="25.001 - 100.000 UF">25.001 - 100.000 UF (mediana empresa)</option>
+                        <option value="Prefiero no responder">Prefiero no responder</option>
+                    </select>
+                    <div class="help-text" data-control="">
+                        💡 Influye en: Viabilidad del plan y perfil objetivo
+                    </div>
+                </div>
+
+                <!-- P0.5 - Tecnologías Críticas Utilizadas -->
+                <div class="question">
+                    <label>
+                        <span class="question-number">P0.5</span>
+                        ¿Qué tecnologías críticas utiliza? <span class="required">*</span>
+                        <small>(Seleccione todas las que apliquen - mínimo 1)</small>
+                    </label>
+                    <div class="checkbox-group">
+                        <label class="checkbox-label">
+                            <input type="checkbox" name="P0.5" value="Correo electrónico corporativo">
+                            Correo electrónico corporativo
+                        </label>
+                        <label class="checkbox-label">
+                            <input type="checkbox" name="P0.5" value="Página web / e-commerce">
+                            Página web / e-commerce
+                        </label>
+                        <label class="checkbox-label">
+                            <input type="checkbox" name="P0.5" value="Servidor(es) propio(s)">
+                            Servidor(es) propio(s)
+                        </label>
+                        <label class="checkbox-label">
+                            <input type="checkbox" name="P0.5" value="Teletrabajo / trabajo remoto">
+                            Teletrabajo / trabajo remoto
+                        </label>
+                        <label class="checkbox-label">
+                            <input type="checkbox" name="P0.5" value="Dispositivos móviles con información de empresa">
+                            Dispositivos móviles con información de empresa
+                        </label>
+                        <label class="checkbox-label">
+                            <input type="checkbox" name="P0.5" value="Software crítico de negocio (ERP, CRM, contabilidad)">
+                            Software crítico de negocio (ERP, CRM, contabilidad)
+                        </label>
+                        <label class="checkbox-label">
+                            <input type="checkbox" name="P0.5" value="Servicios en la nube (Drive, OneDrive, AWS)">
+                            Servicios en la nube (Drive, OneDrive, AWS)
+                        </label>
+                    </div>
+                    <div class="help-text" data-control="ID.AM-02">
+                        💡 Mapea a: ID.AM-02 (Inventario de software)
+                    </div>
+                </div>
+
+                <div class="navigation-buttons">
+                    <button type="button" class="btn btn-secondary" disabled>◀ Anterior</button>
+                    <button type="button" class="btn btn-primary" onclick="siguienteSección(1)">Siguiente ▶</button>
+                </div>
+            </section>
+
+            <!-- ============================================ -->
+            <!-- SECCIÓN 1: GOBERNANZA (FASE 1) -->
+            <!-- ============================================ -->
+            <section class="section" id="section-1" style="display: none;">
+                <div class="section-header">
+                    <h2>Sección 1: Gobernanza</h2>
+                    <p>Fundamentos organizacionales de ciberseguridad (Fase 1)</p>
+                </div>
+
+                <!-- P1.1 - Responsable de ciberseguridad -->
+                <div class="question">
+                    <label for="P1.1">
+                        <span class="question-number">P1.1</span>
+                        ¿Quién es el responsable de la ciberseguridad en su empresa? <span class="required">*</span>
+                    </label>
+                    <select id="P1.1" name="P1.1" class="input-select" required>
+                        <option value="">Seleccione opción</option>
+                        <option value="No hay alguien específico">No hay alguien específico designado</option>
+                        <option value="Gerente General">Gerente General / Dueño</option>
+                        <option value="Encargado TI interno">Encargado TI interno</option>
+                        <option value="Proveedor TI externo">Proveedor TI externo</option>
+                        <option value="Varias personas sin claridad">Varias personas sin claridad de responsabilidades</option>
+                    </select>
+                    <div class="help-text" data-control="GV.RR-01">
+                        💡 Mapea a: GV.RR-01 (Liderazgo asume responsabilidad)
+                    </div>
+                </div>
+
+                <!-- P1.2 - Políticas documentadas -->
+                <div class="question">
+                    <label for="P1.2">
+                        <span class="question-number">P1.2</span>
+                        ¿Tiene políticas documentadas de ciberseguridad? <span class="required">*</span>
+                    </label>
+                    <select id="P1.2" name="P1.2" class="input-select" required>
+                        <option value="">Seleccione opción</option>
+                        <option value="No tenemos políticas">No tenemos políticas</option>
+                        <option value="Reglas informales">Tenemos reglas informales (no escritas)</option>
+                        <option value="Políticas básicas">Tenemos algunas políticas básicas documentadas</option>
+                        <option value="Políticas completas">Tenemos políticas completas documentadas y comunicadas</option>
+                    </select>
+                    <div class="help-text" data-control="GV.PO-01">
+                        💡 Mapea a: GV.PO-01 (Establecer y comunicar políticas)
+                    </div>
+                </div>
+
+                <!-- P1.3 - Integración en decisiones -->
+                <div class="question">
+                    <label for="P1.3">
+                        <span class="question-number">P1.3</span>
+                        ¿Cómo se integra la ciberseguridad en las decisiones del negocio? <span class="required">*</span>
+                    </label>
+                    <select id="P1.3" name="P1.3" class="input-select" required>
+                        <option value="">Seleccione opción</option>
+                        <option value="No se considera">No se considera en decisiones empresariales</option>
+                        <option value="Solo cuando surgen problemas">Solo cuando surgen problemas</option>
+                        <option value="Informalmente">Se considera informalmente en decisiones importantes</option>
+                        <option value="Proceso formal">Proceso formal en reuniones de gerencia/directorio</option>
+                    </select>
+                    <div class="help-text" data-control="GV.OC-01">
+                        💡 Mapea a: GV.OC-01 (Comprender misión para gestión de riesgos)
+                    </div>
+                </div>
+
+                <!-- P1.4 - Tolerancia al riesgo -->
+                <div class="question">
+                    <label for="P1.4">
+                        <span class="question-number">P1.4</span>
+                        ¿Cuánta pérdida de datos o tiempo de inactividad podría tolerar? <span class="required">*</span>
+                    </label>
+                    <select id="P1.4" name="P1.4" class="input-select" required>
+                        <option value="">Seleccione opción</option>
+                        <option value="No evaluado">No lo hemos evaluado</option>
+                        <option value="Menos de 4 horas">Menos de 4 horas de inactividad sería crítico</option>
+                        <option value="1 día">1 día de inactividad sería manejable</option>
+                        <option value="Más de 1 día">Más de 1 día no sería un problema grave</option>
+                    </select>
+                    <div class="help-text" data-control="GV.RM-02">
+                        💡 Mapea a: GV.RM-02 (Determinar tolerancia al riesgo)
+                    </div>
+                </div>
+
+                <div class="navigation-buttons">
+                    <button type="button" class="btn btn-secondary" onclick="anteriorSección(0)">◀ Anterior</button>
+                    <button type="button" class="btn btn-primary" onclick="siguienteSección(2)">Siguiente ▶</button>
+                </div>
+            </section>
+
+            <!-- ============================================ -->
+            <!-- SECCIÓN 2: VISIBILIDAD Y CAPACITACIÓN (FASE 2) -->
+            <!-- ============================================ -->
+            <section class="section" id="section-2" style="display: none;">
+                <div class="section-header">
+                    <h2>Sección 2: Visibilidad y Capacitación</h2>
+                    <p>Conocimiento de activos y factor humano (Fase 2)</p>
+                </div>
+
+                <!-- P2.1 - Inventario hardware -->
+                <div class="question">
+                    <label for="P2.1">
+                        <span class="question-number">P2.1</span>
+                        ¿Tiene inventario actualizado de sus equipos (computadores, notebooks, tablets)? <span class="required">*</span>
+                    </label>
+                    <select id="P2.1" name="P2.1" class="input-select" required>
+                        <option value="">Seleccione opción</option>
+                        <option value="No tenemos inventario">No tenemos inventario</option>
+                        <option value="Lista desactualizada">Lista básica en papel/Excel desactualizada (>6 meses)</option>
+                        <option value="Inventario digital">Inventario digital actualizado (<6 meses)</option>
+                        <option value="Inventario automatizado">Inventario automatizado con responsables asignados</option>
+                    </select>
+                    <div class="help-text" data-control="ID.AM-01">
+                        💡 Mapea a: ID.AM-01 (Inventario de hardware)
+                    </div>
+                </div>
+
+                <!-- P2.2 - Inventario software -->
+                <div class="question">
+                    <label for="P2.2">
+                        <span class="question-number">P2.2</span>
+                        ¿Tiene inventario actualizado de software y servicios críticos? <span class="required">*</span>
+                    </label>
+                    <select id="P2.2" name="P2.2" class="input-select" required>
+                        <option value="">Seleccione opción</option>
+                        <option value="No tenemos inventario">No tenemos inventario</option>
+                        <option value="Lista desactualizada">Lista básica en papel/Excel desactualizada</option>
+                        <option value="Inventario digital">Inventario digital actualizado</option>
+                        <option value="Inventario automatizado">Inventario automatizado con licencias y vencimientos</option>
+                    </select>
+                    <div class="help-text" data-control="ID.AM-02">
+                        💡 Mapea a: ID.AM-02 (Inventario de software)
+                    </div>
+                </div>
+
+                <!-- P2.3 - Capacitación -->
+                <div class="question">
+                    <label for="P2.3">
+                        <span class="question-number">P2.3</span>
+                        ¿Ha capacitado a sus empleados en ciberseguridad en el último año? <span class="required">*</span>
+                    </label>
+                    <select id="P2.3" name="P2.3" class="input-select" required>
+                        <option value="">Seleccione opción</option>
+                        <option value="No es necesario">Considero que no es necesario</option>
+                        <option value="Información para leer">Les dimos información para leer</option>
+                        <option value="Charla">Recibieron una charla de sensibilización</option>
+                        <option value="Curso">Fueron a un curso de varios días</option>
+                        <option value="Requisito contratación">Al contratar requerimos formación previa en seguridad</option>
+                    </select>
+                    <div class="help-text" data-control="PR.AT-01">
+                        💡 Mapea a: PR.AT-01 (Capacitación del personal)
+                    </div>
+                </div>
+
+                <!-- P2.4 - Software original -->
+                <div class="question">
+                    <label for="P2.4">
+                        <span class="question-number">P2.4</span>
+                        ¿Compra software y hardware original de proveedores confiables? <span class="required">*</span>
+                    </label>
+                    <select id="P2.4" name="P2.4" class="input-select" required>
+                        <option value="">Seleccione opción</option>
+                        <option value="Sin política">No tenemos política específica</option>
+                        <option value="A veces no oficiales">A veces compramos de fuentes no oficiales</option>
+                        <option value="Siempre oficiales">Siempre compramos de proveedores oficiales</option>
+                        <option value="Con verificación">Tenemos proceso de verificación de autenticidad</option>
+                    </select>
+                    <div class="help-text" data-control="ID.RA-09">
+                        💡 Mapea a: ID.RA-09 (Evaluar autenticidad HW/SW)
+                    </div>
+                </div>
+
+                <div class="navigation-buttons">
+                    <button type="button" class="btn btn-secondary" onclick="anteriorSección(1)">◀ Anterior</button>
+                    <button type="button" class="btn btn-primary" onclick="siguienteSección(3)">Siguiente ▶</button>
+                </div>
+            </section>
+
+            <!-- ============================================ -->
+            <!-- SECCIÓN 3: PROTECCIÓN TÉCNICA (FASE 3) -->
+            <!-- ============================================ -->
+            <section class="section" id="section-3" style="display: none;">
+                <div class="section-header">
+                    <h2>Sección 3: Protección Técnica</h2>
+                    <p>Controles técnicos de seguridad (Fase 3)</p>
+                </div>
+
+                <!-- P3.1 - Gestión de cuentas -->
+                <div class="question">
+                    <label for="P3.1">
+                        <span class="question-number">P3.1</span>
+                        ¿Cómo gestiona las cuentas de usuario cuando alguien ingresa o se va? <span class="required">*</span>
+                    </label>
+                    <select id="P3.1" name="P3.1" class="input-select" required>
+                        <option value="">Seleccione opción</option>
+                        <option value="Sin proceso">No tenemos proceso definido</option>
+                        <option value="Cuando nos acordamos">Lo hacemos cuando nos acordamos</option>
+                        <option value="Proceso informal">Tenemos proceso informal</option>
+                        <option value="Proceso formal">Proceso formal documentado (creación y eliminación inmediata)</option>
+                    </select>
+                    <div class="help-text" data-control="PR.AA-01">
+                        💡 Mapea a: PR.AA-01 (Gestión de identidades y credenciales)
+                    </div>
+                </div>
+
+                <!-- P3.2 - MFA -->
+                <div class="question">
+                    <label for="P3.2">
+                        <span class="question-number">P3.2</span>
+                        ¿Usa autenticación de doble factor (MFA) en sistemas críticos? <span class="required">*</span>
+                    </label>
+                    <select id="P3.2" name="P3.2" class="input-select" required>
+                        <option value="">Seleccione opción</option>
+                        <option value="Solo contraseñas">No, solo contraseñas</option>
+                        <option value="Algunos sistemas">Solo en algunos sistemas críticos</option>
+                        <option value="Mayoría sistemas">Sí, en la mayoría de sistemas críticos</option>
+                        <option value="Todos sistemas">Sí, obligatorio en todos los sistemas críticos</option>
+                    </select>
+                    <div class="help-text" data-control="PR.AA-03">
+                        💡 Mapea a: PR.AA-03 (Autenticación multifactor)
+                    </div>
+                </div>
+
+                <!-- P3.3 - Backups -->
+                <div class="question">
+                    <label for="P3.3">
+                        <span class="question-number">P3.3</span>
+                        ¿Con qué frecuencia realiza copias de seguridad (backups)? <span class="required">*</span>
+                    </label>
+                    <select id="P3.3" name="P3.3" class="input-select" required>
+                        <option value="">Seleccione opción</option>
+                        <option value="Nunca">Nunca / No lo sé</option>
+                        <option value="Cuando me acuerdo">Cuando me acuerdo</option>
+                        <option value="Mensual">Una vez al mes</option>
+                        <option value="Semanal">Cada semana</option>
+                        <option value="Diario">Todos los días</option>
+                    </select>
+                    <div class="help-text" data-control="PR.DS-11">
+                        💡 Mapea a: PR.DS-11 (Crear y comprobar backups)
+                    </div>
+                </div>
+
+                <!-- P3.4 - Parches -->
+                <div class="question">
+                    <label for="P3.4">
+                        <span class="question-number">P3.4</span>
+                        ¿Con qué frecuencia actualiza software y sistemas (parches)? <span class="required">*</span>
+                    </label>
+                    <select id="P3.4" name="P3.4" class="input-select" required>
+                        <option value="">Seleccione opción</option>
+                        <option value="Nunca">Nunca</option>
+                        <option value="De vez en cuando">De vez en cuando</option>
+                        <option value="Cuando avisan">Cuando me avisa el informático o fabricante</option>
+                        <option value="Al día">Estamos al día en todas las actualizaciones</option>
+                    </select>
+                    <div class="help-text" data-control="PR.PS-02">
+                        💡 Mapea a: PR.PS-02 (Mantenimiento software - parches)
+                    </div>
+                </div>
+
+                <div class="navigation-buttons">
+                    <button type="button" class="btn btn-secondary" onclick="anteriorSección(2)">◀ Anterior</button>
+                    <button type="button" class="btn btn-primary" onclick="siguienteSección(4)">Siguiente ▶</button>
+                </div>
+            </section>
+
+            <!-- ============================================ -->
+            <!-- SECCIÓN 4: DETECCIÓN Y RESPUESTA (FASE 4) -->
+            <!-- ============================================ -->
+            <section class="section" id="section-4" style="display: none;">
+                <div class="section-header">
+                    <h2>Sección 4: Detección y Respuesta</h2>
+                    <p>Capacidades de respuesta ante incidentes (Fase 4)</p>
+                </div>
+
+                <!-- P4.1 - Plan de respuesta -->
+                <div class="question">
+                    <label for="P4.1">
+                        <span class="question-number">P4.1</span>
+                        ¿Tiene un plan documentado para responder a incidentes? <span class="required">*</span>
+                    </label>
+                    <select id="P4.1" name="P4.1" class="input-select" required>
+                        <option value="">Seleccione opción</option>
+                        <option value="No tenemos plan">No tenemos plan</option>
+                        <option value="Sabemos a quién llamar">Sabemos a quién llamar pero no está documentado</option>
+                        <option value="Plan básico">Plan básico documentado (contactos y pasos generales)</option>
+                        <option value="Plan detallado">Plan detallado con roles, procedimientos y responsables</option>
+                    </select>
+                    <div class="help-text" data-control="ID.IM-04">
+                        💡 Mapea a: ID.IM-04 (Planes de respuesta y recuperación)
+                    </div>
+                </div>
+
+                <!-- P4.2 - Criterios incidentes -->
+                <div class="question">
+                    <label for="P4.2">
+                        <span class="question-number">P4.2</span>
+                        ¿Tiene criterios claros para decidir cuándo un problema es un "incidente" formal? <span class="required">*</span>
+                    </label>
+                    <select id="P4.2" name="P4.2" class="input-select" required>
+                        <option value="">Seleccione opción</option>
+                        <option value="Caso a caso">No, lo decidimos caso a caso</option>
+                        <option value="Criterios informales">Tenemos criterios informales</option>
+                        <option value="Criterios documentados">Tenemos criterios básicos documentados</option>
+                        <option value="Criterios formalizados">Tenemos criterios claros y formalizados</option>
+                    </select>
+                    <div class="help-text" data-control="DE.AE-08">
+                        💡 Mapea a: DE.AE-08 (Declarar incidentes formalmente)
+                    </div>
+                </div>
+
+                <!-- P4.3 - Contención -->
+                <div class="question">
+                    <label for="P4.3">
+                        <span class="question-number">P4.3</span>
+                        ¿Sabe cómo aislar rápidamente un equipo infectado? <span class="required">*</span>
+                    </label>
+                    <select id="P4.3" name="P4.3" class="input-select" required>
+                        <option value="">Seleccione opción</option>
+                        <option value="No sabríamos">No sabríamos qué hacer</option>
+                        <option value="Apagar equipo">Sabríamos apagar el equipo</option>
+                        <option value="Desconectar red">Sabríamos desconectarlo de la red</option>
+                        <option value="Procedimiento documentado">Tenemos procedimiento documentado de contención</option>
+                    </select>
+                    <div class="help-text" data-control="RS.MI-01">
+                        💡 Mapea ea a: RS.MI-01 (Contener incidentes)
+                    </div>
+                </div>
+
+                <!-- P4.4 - Erradicación -->
+            <div class="question">
+                <label for="P4.4">
+                    <span class="question-number">P4.4</span>
+                    ¿Tiene proceso para limpiar completamente un equipo después de un incidente? <span class="required">*</span>
+                </label>
+                <select id="P4.4" name="P4.4" class="input-select" required>
+                    <option value="">Seleccione opción</option>
+                    <option value="No sabríamos">No sabríamos cómo hacerlo</option>
+                    <option value="Con antivirus">Lo intentaríamos con antivirus</option>
+                    <option value="Llamar proveedor">Llamaríamos al proveedor TI</option>
+                    <option value="Procedimiento documentado">Tenemos procedimiento documentado (formateo, reinstalación)</option>
+                </select>
+                <div class="help-text" data-control="RS.MI-02">
+                    💡 Mapea a: RS.MI-02 (Erradicar incidentes)
+                </div>
+            </div>
+
+            <div class="navigation-buttons">
+                <button type="button" class="btn btn-secondary" onclick="anteriorSección(3)">◀ Anterior</button>
+                <button type="button" class="btn btn-primary" onclick="siguienteSección(5)">Siguiente ▶</button>
+            </div>
+        </section>
+
+        <!-- ============================================ -->
+        <!-- SECCIÓN 5: CRITICIDAD Y RECURSOS -->
+        <!-- ============================================ -->
+        <section class="section" id="section-5" style="display: none;">
+            <div class="section-header">
+                <h2>Sección 5: Criticidad y Recursos</h2>
+                <p>Información para priorización del plan de acción</p>
+            </div>
+
+            <!-- P5.1 - RTO -->
+            <div class="question">
+                <label for="P5.1">
+                    <span class="question-number">P5.1</span>
+                    ¿Cuánto tiempo podría operar sin acceso a sus sistemas críticos? <span class="required">*</span>
+                </label>
+                <select id="P5.1" name="P5.1" class="input-select" required>
+                    <option value="">Seleccione opción</option>
+                    <option value="Menos de 4 horas">Menos de 4 horas</option>
+                    <option value="4 horas - 1 día">Entre 4 horas y 1 día</option>
+                    <option value="1-3 días">Entre 1 y 3 días</option>
+                    <option value="Más de 3 días">Más de 3 días (no es crítico)</option>
+                </select>
+                <div class="help-text" data-control="">
+                    💡 Influye en: RTO/RPO para priorización de controles
+                </div>
+            </div>
+
+            <!-- P5.2 - Tiempo implementación -->
+            <div class="question">
+                <label for="P5.2">
+                    <span class="question-number">P5.2</span>
+                    ¿Cuánto tiempo tiene disponible para implementar mejoras de seguridad? <span class="required">*</span>
+                </label>
+                <select id="P5.2" name="P5.2" class="input-select" required>
+                    <option value="">Seleccione opción</option>
+                    <option value="3 meses">3 meses (urgente)</option>
+                    <option value="6 meses">6 meses (normal)</option>
+                    <option value="12 meses">12 meses (gradual)</option>
+                    <option value="18+ meses">18+ meses (largo plazo)</option>
+                </select>
+                <div class="help-text" data-control="">
+                    💡 Influye en: Cronograma del plan de acción
+                </div>
+            </div>
+
+            <!-- P5.3 - Incidentes previos -->
+            <div class="question">
+                <label for="P5.3">
+                    <span class="question-number">P5.3</span>
+                    ¿Ha sufrido algún incidente de ciberseguridad en los últimos 12 meses? <span class="required">*</span>
+                </label>
+                <select id="P5.3" name="P5.3" class="input-select" required>
+                    <option value="">Seleccione opción</option>
+                    <option value="No">No</option>
+                    <option value="No estoy seguro">No estoy seguro</option>
+                    <option value="Sí">Sí (favor especificar en comentarios)</option>
+                </select>
+                <div class="help-text" data-control="">
+                    💡 Influye en: Priorización de controles reactivos (RESPOND/RECOVER)
+                </div>
+            </div>
+
+            <div class="navigation-buttons">
+                <button type="button" class="btn btn-secondary" onclick="anteriorSección(4)">◀ Anterior</button>
+                <button type="button" class="btn btn-primary btn-generate" onclick="generarReporte()">
+                    📄 Generar Reporte de Diagnóstico
+                </button>
+            </div>
+        </section>
+
+    </form>
+
+    <!-- SECCIÓN DE RESULTADOS -->
+    <section id="resultados" style="display: none;">
+        <div class="resultados-container">
+            <div class="success-message">
+                <h2>✅ Diagnóstico Completado</h2>
+                <p>Su reporte de diagnóstico de ciberseguridad ha sido generado exitosamente.</p>
+            </div>
+
+            <div id="resumen-resultados" class="resumen-box">
+                <!-- Se llenará dinámicamente con JavaScript -->
+            </div>
+
+            <div class="action-buttons">
+                <button class="btn btn-primary btn-large" onclick="descargarPDF()">
+                    📥 Descargar Reporte PDF
+                </button>
+                <button class="btn btn-secondary" onclick="reiniciarCuestionario()">
+                    🔄 Realizar Nuevo Diagnóstico
+                </button>
+            </div>
+        </div>
+    </section>
+
+</main>
+
+<!-- PIE DE PÁGINA -->
+<footer class="footer">
+    <div class="container">
+        <p>&copy; 2025 - Herramienta de Autodiagnóstico de Ciberseguridad para PyMEs</p>
+        <p>Basada en NIST Cybersecurity Framework 2.0</p>
+        <p><small>Proyecto de Tesis - Universidad [Nombre]</small></p>
+    </div>
+</footer>
+
+<!-- LIBRERÍAS EXTERNAS -->
+<!-- jsPDF para generación de PDF -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+
+<!-- Chart.js para gráficos -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+
+<!-- MÓDULOS DE LA APLICACIÓN -->
+<script src="js/evaluador.js"></script>
+<script src="js/objetivo.js"></script>
+<script src="js/brechas.js"></script>
+<script src="js/recomendaciones.js"></script>
+<script src="js/cuestionario.js"></script>
+
