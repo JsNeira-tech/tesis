@@ -215,7 +215,13 @@ function guardarRespuestasSeccion(numeroSeccion) {
                 respuestasUsuario[campo.name] = [];
             }
             if (campo.checked) {
-                respuestasUsuario[campo.name].push(campo.value);
+                // Evitar duplicados si el usuario vuelve atrás
+                if (!respuestasUsuario[campo.name].includes(campo.value)) {
+                    respuestasUsuario[campo.name].push(campo.value);
+                }
+            } else {
+                // Remover si se deselecciona
+                respuestasUsuario[campo.name] = respuestasUsuario[campo.name].filter(v => v !== campo.value);
             }
         } else if (campo.type === 'text' || campo.tagName === 'SELECT') {
             // Para text e selects, guardar valor directamente
@@ -225,6 +231,7 @@ function guardarRespuestasSeccion(numeroSeccion) {
     
     console.log(`💾 Respuestas guardadas - Sección ${numeroSeccion}:`, respuestasUsuario);
 }
+
 
 /**
  * Captura todas las respuestas del formulario completo
@@ -313,6 +320,9 @@ function marcarSeccionCompletada(numeroSeccion) {
  * Guarda el progreso actual en localStorage
  */
 function guardarProgreso() {
+    // Capturar respuestas de la sección actual ANTES de guardar
+    guardarRespuestasSeccion(seccionActual);
+    
     const progreso = {
         seccionActual: seccionActual,
         respuestas: respuestasUsuario,
@@ -348,7 +358,17 @@ function cargarProgresoGuardado() {
                 respuestasUsuario = progreso.respuestas;
                 // Restaurar valores en el formulario
                 restaurarValoresFormulario();
-                console.log('✅ Progreso restaurado');
+                
+                // Iniciar cuestionario y navegar a la sección guardada
+                iniciarCuestionario();
+                mostrarSeccion(progreso.seccionActual);
+                actualizarProgreso();
+                // Marcar secciones anteriores como completadas
+                for (let i = 0; i < progreso.seccionActual; i++) {
+                    marcarSeccionCompletada(i);
+                }
+
+                console.log(`✅ Progreso restaurado en Sección ${progreso.seccionActual}`);
             } else {
                 localStorage.removeItem('diagnostico_progreso');
             }
@@ -713,10 +733,12 @@ function descargarPDF() {
         doc.setFont('helvetica', 'normal');
         
         // Agrupar plan por fases
-        const planPorFases = agruparPlanPorFases(planDeAccion);
+        const planPorFases = agruparPlanPorFases(planDeAccion); // Llama a la función local
         
         Object.keys(planPorFases).forEach(fase => {
-            // Control de página
+            const recomendacionesFase = planPorFases[fase];
+
+            // Control de página para el TÍTULO DE LA FASE
             if (y > 250) {
                 doc.addPage();
                 y = 20;
@@ -724,39 +746,93 @@ function descargarPDF() {
             
             doc.setFont('helvetica', 'bold');
             doc.setFontSize(13);
-            doc.text(`Fase ${fase}: ${obtenerNombreFase(parseInt(fase))}`, margenIzq, y);
+            doc.text(`Fase ${fase}: ${obtenerNombreFase(parseInt(fase))}`, margenIzq, y); // Llama a la función local
             y += 8;
             
             doc.setFont('helvetica', 'normal');
             doc.setFontSize(10);
             
-            planPorFases[fase].forEach((recomendacion, index) => {
-                if (y > 270) {
+            if (recomendacionesFase.length === 0) {
+                doc.setFont('helvetica', 'italic');
+                doc.text('No hay recomendaciones para esta fase.', margenIzq + 3, y);
+                y += 10;
+                return; // Siguiente fase
+            }
+
+            
+            recomendacionesFase.forEach((recomendacion, index) => {
+                
+                // Control de página ANTES de imprimir una nueva recomendación
+                // Dejamos más espacio (ej. 220) para asegurar que el título quepa
+                if (y > 220) { 
                     doc.addPage();
                     y = 20;
                 }
                 
+                // Título del Control (usando el 'titulo' de la plantilla)
                 doc.setFont('helvetica', 'bold');
-                doc.text(`${index + 1}. ${recomendacion.control_nombre}`, margenIzq + 3, y);
+                doc.setFontSize(11); // Un poco más grande para el título
+                doc.text(`${recomendacion.numero_prioridad}. ${recomendacion.titulo}`, margenIzq + 3, y);
+                y += 6;
+                
+                doc.setFont('helvetica', 'normal');
+                doc.setFontSize(9);
+                doc.setTextColor(100, 100, 100);
+                doc.text(`Control: ${recomendacion.control_id} | Criticidad: ${recomendacion.criticidad}`, margenIzq + 6, y);
+                doc.setTextColor(0, 0, 0);
+                y += 6;
+                
+                doc.setFontSize(10);
+                
+                // 1. QUÉ IMPLEMENTAR (Texto completo, sin truncar)
+                doc.setFont('helvetica', 'bold');
+                doc.text('Qué implementar:', margenIzq + 6, y);
                 y += 5;
                 
                 doc.setFont('helvetica', 'normal');
-                doc.text(`Control: ${recomendacion.control_id}`, margenIzq + 6, y);
+                let lineas = doc.splitTextToSize(recomendacion.que_implementar, anchoUtil - 9); 
+                doc.text(lineas, margenIzq + 9, y);
+                y += (lineas.length * 4) + 5; // Ajustamos el 'y' según las líneas
+
+                // 2. PASOS SUGERIDOS (¡NUEVO!)
+                if (y > 260) { doc.addPage(); y = 20; } 
+                
+                doc.setFont('helvetica', 'bold');
+                doc.text('Pasos sugeridos:', margenIzq + 6, y);
                 y += 5;
+
+                doc.setFont('helvetica', 'normal');
+                doc.setFontSize(9.5); // Ligeramente más pequeño para los pasos
+                recomendacion.pasos.forEach(paso => {
+                    // Control de página por cada paso, para evitar cortes
+                    if (y > 270) { 
+                        doc.addPage(); 
+                        y = 20; 
+                    }
+                    lineas = doc.splitTextToSize(`• ${paso}`, anchoUtil - 9);
+                    doc.text(lineas, margenIzq + 9, y);
+                    y += (lineas.length * 4) + 2; // Espacio entre pasos
+                });
                 
-                const descripcionCorta = recomendacion.que_implementar.substring(0, 120) + '...';
-                const lineas = doc.splitTextToSize(descripcionCorta, anchoUtil - 6);
-                doc.text(lineas, margenIzq + 6, y);
-                y += lineas.length * 4 + 3;
+                y += 4; // Espacio extra
+                doc.setFontSize(10);
                 
+                // 3. ESTIMACIÓN
+                if (y > 270) { doc.addPage(); y = 20; }
                 doc.setFontSize(9);
-                doc.setTextColor(100, 100, 100);
-                doc.text(`Estimación: ${recomendacion.estimacion.tiempo} | ${recomendacion.estimacion.esfuerzo}`, margenIzq + 6, y);
+                doc.setFont('helvetica', 'bold');
+                doc.setTextColor(80, 80, 80);
+                
+                // Construir string de estimación
+                let estimacionStr = `Estimación: ${recomendacion.estimacion.tiempo} | ${recomendacion.estimacion.esfuerzo}`;                                
+                doc.text(estimacionStr, margenIzq + 6, y);
                 doc.setTextColor(0, 0, 0);
-                y += 8;
+                y += 10; // Más espacio entre recomendaciones
                 
                 doc.setFontSize(10);
             });
+            
+            // --- FIN DE LA MODIFICACIÓN ---
             
             y += 5;
         });
@@ -827,7 +903,7 @@ function extraerContextoOrganizacional(respuestas) {
  * @returns {Object} - Plan agrupado por fase {1: [...], 2: [...], ...}
  */
 function agruparPlanPorFases(plan) {
-    const porFases = {};
+    const porFases = {1:[], 2:[], 3:[], 4:[]}; // Inicializar todas las fases
     
     plan.forEach(recomendacion => {
         const fase = recomendacion.fase;
