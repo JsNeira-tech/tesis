@@ -44,7 +44,7 @@ const PLANTILLAS_RECOMENDACIONES = {
             que_implementar: 'Crear y documentar las 3 políticas de seguridad más críticas: Política de Contraseñas, Política de Uso Aceptable (Email/Web) y Política de Reporte de Incidentes.',
             por_que: 'Actualmente no existen reglas formales. Sin políticas, los empleados no saben qué se espera de ellos, aumentando el riesgo de errores críticos (ej. phishing, mal uso de contraseñas).',
             pasos: [
-                'Documentar Política de Contraseñas (largo mínimo 12, no reutilizar, obligar MFA donde se pueda).',
+                'Documentar Política de Contraseñas (largo mínimo 12 caracteres, no reutilizar contraseñas, obligar verificación en dos pasos -MFA- donde sea posible).',
                 'Documentar Política de Uso Aceptable (prohibir descargas sospechosas, uso de software pirata, etc.).',
                 'Definir Política de Reporte de Incidentes (a quién llamar/escribir y cuándo).',
                 'Documentar estas 3 políticas en un documento simple (1-2 páginas) y guardarlo en un lugar accesible.',
@@ -131,7 +131,7 @@ const PLANTILLAS_RECOMENDACIONES = {
             por_que: 'Apagar incendios es costoso e ineficiente. Ser proactivo permite identificar riesgos antes de que se conviertan en incidentes, ahorrando dinero y reputación a largo plazo.',
             pasos: [
                 'Incluir la ciberseguridad como punto fijo en reuniones de gerencia (no solo cuando hay problemas).',
-                'Crear un checklist simple de 5 preguntas de seguridad para evaluar nuevos proyectos o proveedores.',
+                'Crear un checklist simple de 5 preguntas de seguridad para evaluar nuevos proyectos o proveedores. Ejemplos de preguntas: ¿Tendrá acceso a datos de clientes?, ¿Necesita contraseñas?, ¿Es empresa conocida?, ¿Qué pasa si tienen un problema de seguridad?, ¿Podemos revisar sus medidas?',
                 'Realizar un análisis de riesgo básico una vez al año (identificar 5 riesgos principales).',
                 'Documentar formalmente las decisiones de riesgo (ej. "Aceptamos el riesgo de... porque...").'
             ],
@@ -467,12 +467,12 @@ const PLANTILLAS_RECOMENDACIONES = {
     'PR.AA-01': {
         // PUNTAJE 0: (Sin proceso)
         0: {
-            titulo: 'Crear Proceso de Altas y Bajas de Usuarios (On/Off-boarding)',
+            titulo: 'Crear Proceso para Entrada y Salida de Empleados',
             que_implementar: 'Establecer un proceso formal y documentado para gestionar las cuentas de usuario cuando un empleado ingresa (Onboarding) o se va (Offboarding).',
             por_que: 'Cuentas de ex-empleados que siguen activas ("cuentas huérfanas") son un riesgo de seguridad crítico. Pueden ser usadas por atacantes o ex-empleados malintencionados.',
             pasos: [
-                'Crear un checklist de "Alta de Usuario" (qué cuentas crear: email, ERP, etc.).',
-                'Crear un checklist de "Baja de Usuario" (qué cuentas eliminar, redirigir email, respaldar datos).',
+                'Crear un checklist de "Entrada de Usuario" con acciones específicas. Ejemplo de items: Crear cuenta de correo, Dar acceso al sistema de facturación, Configurar contraseña segura, Explicar políticas de seguridad, Firmar acuerdo de confidencialidad.',
+                'Crear un checklist de "Salida de Usuario" con pasos a seguir. Ejemplo de items: Desactivar correo el mismo día, Eliminar accesos a sistemas, Redirigir emails a su jefe, Respaldar archivos importantes, Recuperar equipos de la empresa.',
                 'Definir que el proceso de Baja debe ejecutarse EL MISMO DÍA que el empleado se va.',
                 'Integrar este flujo con RRHH (RRHH notifica a TI).',
                 'Realizar una auditoría inicial para encontrar y eliminar cuentas huérfanas.'
@@ -531,9 +531,9 @@ const PLANTILLAS_RECOMENDACIONES = {
     'PR.AA-03': {
         // PUNTAJE 0: (Solo contraseñas)
         0: {
-            titulo: 'Implementar Autenticación de Doble Factor (MFA)',
-            que_implementar: 'Activar urgentemente la autenticación de doble factor (MFA) en los servicios críticos, especialmente el correo electrónico y accesos de administrador.',
-            por_que: 'Las contraseñas solas ya no son seguras (pueden ser robadas o adivinadas). El MFA es la barrera de seguridad más efectiva para prevenir el 99% de los ataques de robo de cuentas.',
+            titulo: 'Implementar Verificación en Dos Pasos (MFA)',
+            que_implementar: 'Activar urgentemente la verificación en dos pasos (también llamada MFA o autenticación de doble factor) en los servicios críticos, especialmente el correo electrónico y accesos de administrador. Esto significa que además de la contraseña, se necesita un código del celular para entrar.',
+            por_que: 'Las contraseñas solas ya no son seguras (pueden ser robadas o adivinadas fácilmente). La verificación en dos pasos es como tener dos candados en vez de uno: aunque roben su contraseña, no pueden entrar sin su celular. Previene el 99% de los robos de cuentas.',
             pasos: [
                 'Identificar servicios críticos que soporten MFA (Email: Office 365 / GSuite, Bancos, ERP en la nube).',
                 'Activar MFA de forma obligatoria para cuentas de Administradores (¡INMEDIATO!).',
@@ -648,7 +648,7 @@ const PLANTILLAS_RECOMENDACIONES = {
                 'Agendar en el calendario: "Prueba de Restauración de Backup" (ej. primer viernes de cada mes).',
                 'La prueba consiste en restaurar un archivo o una base de datos de muestra en un lugar temporal.',
                 'Documentar los resultados de la prueba (Exitosa/Fallida).',
-                'Asegurar que las copias estén protegidas contra ransomware (Inmutabilidad, si el proveedor lo ofrece).'
+                'Asegurar que las copias estén protegidas contra ransomware (verificar que no puedan ser borradas o modificadas por un atacante, si su proveedor ofrece esta opción).'
             ],
             estimacion: {
                 tiempo: '1 Semana (Ajuste) + 4 horas mensuales',
@@ -889,11 +889,11 @@ const PLANTILLAS_RECOMENDACIONES = {
         // PUNTAJE 1: (Apagar equipo)
         1: {
             titulo: 'Corregir Procedimiento: Aislar, NO Apagar',
-            que_implementar: 'Corregir el procedimiento actual. La acción correcta es AISLAR (desconectar red/WiFi), no APAGAR (ya que borra evidencia vital de la memoria RAM).',
-            por_que: 'Apagar el equipo borra la memoria RAM, que contiene la evidencia más importante de cómo entró el atacante. Sin esa evidencia, es imposible saber el alcance real del ataque.',
+            que_implementar: 'Corregir el procedimiento actual. La acción correcta es AISLAR el equipo (desconectar internet/WiFi), pero NO apagarlo. Apagar borra información crítica que ayuda a investigar cómo entró el atacante.',
+            por_que: 'Cuando apagas un equipo comprometido, se pierde información vital que está solo en la memoria temporal del computador (esta información ayuda a entender cómo atacaron y qué datos tocaron). Sin esta información, es imposible saber el alcance real del ataque ni prevenir que vuelva a ocurrir.',
             pasos: [
                 'Corregir el procedimiento: 1. AISLAR (desconectar red/WiFi), 2. NO APAGAR, 3. LLAMAR A TI.',
-                'Capacitar al personal técnico sobre por qué no deben apagar el equipo (preservación de evidencia).',
+                'Capacitar al personal técnico: explicar por qué NO deben apagar el equipo (se pierde información importante para investigar el ataque).',
                 'Re-comunicar el procedimiento correcto a todo el personal.'
             ],
             estimacion: {
@@ -902,7 +902,7 @@ const PLANTILLAS_RECOMENDACIONES = {
                 responsable: 'Responsable TI/Seguridad'
             },
             recursos: [
-                'Guía de preservación de evidencia digital.'
+                'Guía de qué hacer cuando detecta un ataque (cómo guardar información importante para investigar).'
             ]
         },
         // PUNTAJE 2: (Desconectar red)

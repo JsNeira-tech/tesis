@@ -152,10 +152,11 @@ const MAPEO_PUNTAJES = {
         'Proceso formal': 3
     },
     'P1.4': {
-        'No evaluado': 0,
+        'No lo hemos evaluado': 0,
         'Menos de 4 horas': 3,
-        '1 día': 3,
-        'Más de 1 día': 3
+        'Entre 4 horas y 1 día': 3,
+        'Entre 1 y 3 días': 3,
+        'Más de 3 días': 3
     },
     
     // SECCIÓN 2: VISIBILIDAD
@@ -172,11 +173,11 @@ const MAPEO_PUNTAJES = {
         'Inventario automatizado': 3
     },
     'P2.3': {
-        'No es necesario': 0,
-        'Información para leer': 1,
-        'Charla': 2,
-        'Curso': 3,
-        'Requisito contratación': 3
+        'No, no se ha realizado ninguna capacitación': 0,
+        'material informativo para lectura': 1,
+        'charla o presentación breve': 2,
+        'curso o taller más extenso': 3,
+        'capacitaciones de forma regular': 3
     },
     'P2.4': {
         'Sin política': 0,

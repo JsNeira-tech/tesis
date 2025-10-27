@@ -621,102 +621,326 @@ function descargarPDF() {
         // ==================
         doc.setFontSize(16);
         doc.setFont('helvetica', 'bold');
-        doc.text('1. Resumen Ejecutivo', margenIzq, y);
+        doc.text('1. Resumen del Diagnóstico', margenIzq, y);
         y += 10;
-        
-        doc.setFontSize(11);
-        doc.setFont('helvetica', 'normal');
         
         const puntajeGlobal = perfilActualCalculado.puntajeGlobal;
         const porcentaje = Math.round(puntajeGlobal * 100);
         
-        const resumenTexto = `Su empresa presenta un nivel de madurez en ciberseguridad del ${porcentaje}% (${puntajeGlobal.toFixed(2)}/1.00). Se identificaron ${brechasIdentificadas.length} controles que requieren mejora, de los cuales ${brechasIdentificadas.filter(b => b.criticidad === 'Crítica').length} son críticos.`;
+        // Determinar nivel de riesgo y mensaje
+        let nivelRiesgo, colorFondo, interpretacion;
+        if (porcentaje < 40) {
+            nivelRiesgo = 'RIESGO ALTO';
+            colorFondo = [220, 38, 38]; // Rojo
+            interpretacion = 'crítico y requiere atención inmediata';
+        } else if (porcentaje < 70) {
+            nivelRiesgo = 'RIESGO MEDIO';
+            colorFondo = [234, 179, 8]; // Naranja
+            interpretacion = 'adecuado pero mejorable';
+        } else {
+            nivelRiesgo = 'BAJO RIESGO';
+            colorFondo = [34, 197, 94]; // Verde
+            interpretacion = 'bueno';
+        }
         
-        const lineasResumen = doc.splitTextToSize(resumenTexto, anchoUtil);
-        doc.text(lineasResumen, margenIzq, y);
-        y += lineasResumen.length * 6 + 10;
+        // Texto introductorio
+        doc.setFontSize(10);
+        doc.setFont('helvetica', 'normal');
+        const introTexto = doc.splitTextToSize(
+            `Su nivel de seguridad es ${interpretacion}. Ya es consciente de que sus empleados son uno de los elementos en los que más tiene que invertir en ciberseguridad y tiene algunas medidas. No obstante, aún le falta hacer un esfuerzo para organizar y controlar mejor algunos aspectos.`,
+            anchoUtil
+        );
+        doc.text(introTexto, margenIzq, y);
+        y += (introTexto.length * 5) + 12;
+        
+        // ============================================
+        // PORCENTAJE GRANDE Y PROMINENTE (estilo INCIBE)
+        // ============================================
+        
+        // Caja grande con el porcentaje centrada
+        const anchoCaja = 85;
+        const altoCaja = 38;
+        const xCaja = (doc.internal.pageSize.width - anchoCaja) / 2; // Centrado
+        
+        doc.setFillColor(...colorFondo);
+        doc.roundedRect(xCaja, y, anchoCaja, altoCaja, 3, 3, 'F');
+        
+        // Porcentaje grande en blanco
+        doc.setTextColor(255, 255, 255);
+        doc.setFontSize(40);
+        doc.setFont('helvetica', 'bold');
+        const porcentajeTexto = `${porcentaje}%`;
+        const anchoTexto = doc.getTextWidth(porcentajeTexto);
+        doc.text(porcentajeTexto, xCaja + (anchoCaja - anchoTexto) / 2, y + 22);
+        
+        // Nivel de riesgo
+        doc.setFontSize(11);
+        doc.setFont('helvetica', 'bold');
+        const anchoNivel = doc.getTextWidth(nivelRiesgo);
+        doc.text(nivelRiesgo, xCaja + (anchoCaja - anchoNivel) / 2, y + 32);
+        
+        doc.setTextColor(0, 0, 0);
+        doc.setFont('helvetica', 'normal');
+        y += altoCaja + 15;
+        
+        // ============================================
+        // DESGLOSE POR FASES (estilo categorías INCIBE)
+        // ============================================
+        doc.setFontSize(11);
+        doc.setFont('helvetica', 'bold');
+        doc.text('Desglose por Areas:', margenIzq, y);
+        y += 8;
+        
+        // Definir las categorías
+        const categorias = [
+            { nombre: 'Gobernanza (Reglas y Responsables)', fase: 0 },
+            { nombre: 'Visibilidad (Conocimiento de Activos)', fase: 1 },
+            { nombre: 'Proteccion (Controles Tecnicos)', fase: 2 },
+            { nombre: 'Respuesta (Gestion de Incidentes)', fase: 3 }
+        ];
+        
+        categorias.forEach(cat => {
+            const puntajeFase = perfilActualCalculado.porFase[cat.fase];
+            const porcentajeFase = Math.round(puntajeFase * 100);
+            
+            // Determinar color y nivel
+            let colorBarra, nivelRiesgoFase;
+            if (porcentajeFase < 40) {
+                colorBarra = [220, 38, 38]; // Rojo
+                nivelRiesgoFase = 'ALTO';
+            } else if (porcentajeFase < 70) {
+                colorBarra = [234, 179, 8]; // Naranja
+                nivelRiesgoFase = 'MEDIO';
+            } else {
+                colorBarra = [34, 197, 94]; // Verde
+                nivelRiesgoFase = 'BAJO';
+            }
+            
+            // Nombre de categoría
+            doc.setFont('helvetica', 'bold');
+            doc.setFontSize(10);
+            doc.text(cat.nombre, margenIzq + 3, y);
+            y += 6;
+            
+            // Barra de progreso
+            const anchoBarra = 115;
+            const altoBarra = 8;
+            const anchoProgreso = (porcentajeFase / 100) * anchoBarra;
+            
+            // Fondo de la barra (gris claro)
+            doc.setFillColor(240, 240, 240);
+            doc.rect(margenIzq + 3, y - 5, anchoBarra, altoBarra, 'F');
+            
+            // Progreso de la barra (color según nivel)
+            doc.setFillColor(...colorBarra);
+            doc.rect(margenIzq + 3, y - 5, anchoProgreso, altoBarra, 'F');
+            
+            // Porcentaje al lado
+            doc.setFont('helvetica', 'bold');
+            doc.setFontSize(10);
+            doc.setTextColor(0, 0, 0);
+            doc.text(`${porcentajeFase}%`, margenIzq + anchoBarra + 8, y);
+            
+            // Nivel de riesgo
+            doc.setTextColor(...colorBarra);
+            doc.setFont('helvetica', 'bold');
+            doc.setFontSize(9);
+            doc.text(`Riesgo ${nivelRiesgoFase}`, margenIzq + anchoBarra + 28, y);
+            doc.setTextColor(0, 0, 0);
+            
+            y += 11;
+        });
+        
+        y += 5;
+        
+        // Mensaje final del resumen
+        doc.setFontSize(10);
+        doc.setFont('helvetica', 'normal');
+        const mensajeFinal = doc.splitTextToSize(
+            `Se identificaron ${brechasIdentificadas.length} controles que requieren mejora, de los cuales ${brechasIdentificadas.filter(b => b.criticidad === 'Crítica').length} son criticos. El plan de accion a continuacion le guiara para cerrar estas brechas de forma ordenada y realista.`,
+            anchoUtil
+        );
+        doc.text(mensajeFinal, margenIzq, y);
+        y += (mensajeFinal.length * 5) + 5;
         
         // ==================
-        // NUEVA PÁGINA: PERFIL DE MADUREZ
+        // NUEVA PÁGINA: SU SITUACIÓN Y HACIA DÓNDE LO LLEVAREMOS
         // ==================
         doc.addPage();
         y = 20;
         
         doc.setFontSize(16);
         doc.setFont('helvetica', 'bold');
-        doc.text('2. Perfil de Madurez Actual', margenIzq, y);
+        doc.text('2. Su Situación Actual y Hacia Dónde Lo Llevaremos', margenIzq, y);
         y += 10;
         
-        // Tabla de puntajes por fase
+        // Introducción
+        doc.setFontSize(10);
+        doc.setFont('helvetica', 'normal');
+        const intro = doc.splitTextToSize(
+            'Hemos evaluado su empresa en 4 fases de madurez en ciberseguridad. A continuación verá dónde está ahora (ACTUAL) y hacia dónde queremos llevarlo (OBJETIVO) con el plan de acción que viene después.',
+            anchoUtil
+        );
+        doc.text(intro, margenIzq, y);
+        y += (intro.length * 5) + 8;
+        
+        // Explicar qué son las fases
         doc.setFontSize(11);
         doc.setFont('helvetica', 'bold');
-        doc.text('Puntajes por Fase:', margenIzq, y);
-        y += 8;
+        doc.text('¿Qué significan las fases?', margenIzq, y);
+        y += 7;
         
         doc.setFont('helvetica', 'normal');
-        perfilActualCalculado.porFase.forEach((puntaje, index) => {
-            const porcentajeFase = Math.round(puntaje * 100);
-            doc.text(`Fase ${index + 1}: ${porcentajeFase}% (${puntaje.toFixed(2)}/1.00)`, margenIzq + 5, y);
+        doc.setFontSize(10);
+        const explicacionFases = [
+            { fase: 'Fase 1 (Gobernanza)', desc: 'Tiene reglas claras y responsables definidos' },
+            { fase: 'Fase 2 (Visibilidad)', desc: 'Conoce sus equipos, software y capacita a su personal' },
+            { fase: 'Fase 3 (Protección)', desc: 'Tiene controles técnicos funcionando (backups, contraseñas, actualizaciones)' },
+            { fase: 'Fase 4 (Respuesta)', desc: 'Sabe qué hacer si ocurre un incidente o ataque' }
+        ];
+        
+        explicacionFases.forEach(item => {
+            doc.setFont('helvetica', 'bold');
+            doc.text(`• ${item.fase}:`, margenIzq + 3, y);
+            doc.setFont('helvetica', 'normal');
+            const lineas = doc.splitTextToSize(item.desc, anchoUtil - 10);
+            doc.text(lineas, margenIzq + 45, y);
             y += 6;
         });
         
-        y += 10;
+        y += 8;
         
-        // Nota sobre el gráfico radial
-        doc.setFontSize(10);
-        doc.setTextColor(100, 100, 100);
-        const notaGrafico = 'Nota: El gráfico radial de madurez por función NIST está disponible en la versión web interactiva de este reporte.';
-        const lineasNota = doc.splitTextToSize(notaGrafico, anchoUtil);
-        doc.text(lineasNota, margenIzq, y);
-        doc.setTextColor(0, 0, 0);
-        y += lineasNota.length * 5 + 15;
-        
-        // ==================
-        // BRECHAS IDENTIFICADAS
-        // ==================
-        doc.setFontSize(16);
+        // Comparación ACTUAL vs OBJETIVO con barras visuales
         doc.setFont('helvetica', 'bold');
-        doc.text('3. Brechas Identificadas', margenIzq, y);
+        doc.setFontSize(11);
+        doc.text('Comparacion: Donde Esta Ahora vs. Hacia Donde Queremos Llevarlo', margenIzq, y);
         y += 10;
         
-        doc.setFontSize(11);
-        doc.setFont('helvetica', 'normal');
+        // Para cada fase, mostrar barra de progreso ACTUAL → OBJETIVO
+        const categoriasComp = [
+            { nombre: 'Gobernanza', fase: 0 },
+            { nombre: 'Visibilidad', fase: 1 },
+            { nombre: 'Proteccion', fase: 2 },
+            { nombre: 'Respuesta', fase: 3 }
+        ];
         
-        if (brechasIdentificadas.length === 0) {
-            doc.text('¡Felicidades! No se identificaron brechas significativas.', margenIzq, y);
-            y += 10;
-        } else {
-            brechasIdentificadas.slice(0, 10).forEach((brecha, index) => {
-                // Control de página
-                if (y > 270) {
-                    doc.addPage();
-                    y = 20;
-                }
-                
-                doc.setFont('helvetica', 'bold');
-                doc.text(`${index + 1}. ${brecha.control_nombre}`, margenIzq, y);
-                y += 6;
-                
-                doc.setFont('helvetica', 'normal');
-                doc.setFontSize(10);
-                doc.text(`Control: ${brecha.control_id} | Fase: ${brecha.fase} | Criticidad: ${brecha.criticidad}`, margenIzq + 5, y);
-                y += 5;
-                
-                doc.text(`Brecha: ${brecha.brecha.toFixed(1)} puntos`, margenIzq + 5, y);
-                y += 8;
-                
-                doc.setFontSize(11);
-            });
+        categoriasComp.forEach(cat => {
+            const puntajeActual = perfilActualCalculado.porFase[cat.fase];
+            const porcentajeActual = Math.round(puntajeActual * 100);
             
-            if (brechasIdentificadas.length > 10) {
-                y += 5;
-                doc.setFontSize(10);
-                doc.setTextColor(100, 100, 100);
-                doc.text(`... y ${brechasIdentificadas.length - 10} brechas adicionales (ver plan de acción completo)`, margenIzq, y);
-                doc.setTextColor(0, 0, 0);
-                y += 10;
+            // Obtener objetivo de forma segura
+            let nivelObjetivo = 0.75; // Default: 75%
+            if (perfilObjetivoCalculado && perfilObjetivoCalculado.porFase && perfilObjetivoCalculado.porFase[cat.fase] !== undefined) {
+                nivelObjetivo = perfilObjetivoCalculado.porFase[cat.fase];
             }
-        }
+            const porcentajeObjetivo = Math.round(nivelObjetivo * 100);
+            
+            // Determinar color actual
+            let colorActual;
+            if (porcentajeActual < 40) {
+                colorActual = [220, 38, 38]; // Rojo
+            } else if (porcentajeActual < 70) {
+                colorActual = [234, 179, 8]; // Naranja
+            } else {
+                colorActual = [34, 197, 94]; // Verde
+            }
+            
+            // Nombre de fase
+            doc.setFont('helvetica', 'bold');
+            doc.setFontSize(10);
+            doc.text(cat.nombre, margenIzq + 3, y);
+            y += 6;
+            
+            // Barra ACTUAL
+            const anchoBarra = 110;
+            const altoBarra = 6;
+            const anchoProgresoActual = (porcentajeActual / 100) * anchoBarra;
+            
+            // Etiqueta "ACTUAL"
+            doc.setFont('helvetica', 'normal');
+            doc.setFontSize(8);
+            doc.setTextColor(100, 100, 100);
+            doc.text('ACTUAL:', margenIzq + 8, y);
+            y += 4;
+            
+            // Fondo de la barra
+            doc.setFillColor(240, 240, 240);
+            doc.rect(margenIzq + 8, y - 3, anchoBarra, altoBarra, 'F');
+            
+            // Progreso actual
+            doc.setFillColor(...colorActual);
+            doc.rect(margenIzq + 8, y - 3, anchoProgresoActual, altoBarra, 'F');
+            
+            // Porcentaje actual
+            doc.setTextColor(...colorActual);
+            doc.setFont('helvetica', 'bold');
+            doc.setFontSize(9);
+            doc.text(`${porcentajeActual}%`, margenIzq + anchoBarra + 12, y);
+            doc.setTextColor(0, 0, 0);
+            
+            y += 8;
+            
+            // Barra OBJETIVO
+            const anchoProgresoObjetivo = (porcentajeObjetivo / 100) * anchoBarra;
+            const colorObjetivo = [34, 139, 34]; // Verde oscuro para objetivo
+            
+            // Etiqueta "OBJETIVO"
+            doc.setFont('helvetica', 'normal');
+            doc.setFontSize(8);
+            doc.setTextColor(100, 100, 100);
+            doc.text('OBJETIVO:', margenIzq + 8, y);
+            y += 4;
+            
+            // Fondo de la barra
+            doc.setFillColor(240, 240, 240);
+            doc.rect(margenIzq + 8, y - 3, anchoBarra, altoBarra, 'F');
+            
+            // Progreso objetivo
+            doc.setFillColor(...colorObjetivo);
+            doc.rect(margenIzq + 8, y - 3, anchoProgresoObjetivo, altoBarra, 'F');
+            
+            // Porcentaje objetivo
+            doc.setTextColor(...colorObjetivo);
+            doc.setFont('helvetica', 'bold');
+            doc.setFontSize(9);
+            doc.text(`${porcentajeObjetivo}%`, margenIzq + anchoBarra + 12, y);
+            doc.setTextColor(0, 0, 0);
+            
+            // Flecha de mejora si hay diferencia
+            if (porcentajeObjetivo > porcentajeActual) {
+                const diferencia = porcentajeObjetivo - porcentajeActual;
+                doc.setFont('helvetica', 'italic');
+                doc.setFontSize(8);
+                doc.setTextColor(34, 139, 34);
+                doc.text(`+${diferencia}%`, margenIzq + anchoBarra + 30, y);
+                doc.setTextColor(0, 0, 0);
+            }
+            
+            y += 12;
+        });
+        
+        y += 5;
+        
+        // Mensaje motivacional y explicativo
+        doc.setFillColor(245, 250, 255); // Fondo azul muy claro
+        doc.rect(margenIzq - 2, y - 2, anchoUtil + 4, 20, 'F');
+        
+        doc.setFont('helvetica', 'italic');
+        doc.setFontSize(9);
+        doc.setTextColor(50, 50, 50);
+        const mensaje = doc.splitTextToSize(
+            '>> IMPORTANTE: El plan de acción de la siguiente sección lo guiará paso a paso para alcanzar estos objetivos. ' +
+            'No se trata de ser perfecto, sino de mejorar de forma realista y sostenible. ' +
+            'Las brechas más críticas están priorizadas al principio.',
+            anchoUtil - 4
+        );
+        doc.text(mensaje, margenIzq, y + 3);
+        doc.setTextColor(0, 0, 0);
+        doc.setFont('helvetica', 'normal');
+        y += 25;
+        
+        // NOTA: Eliminamos completamente la sección "3. Brechas Identificadas" 
+        // porque es redundante con el Plan de Acción y muy técnica para PyMEs
         
         // ==================
         // NUEVA PÁGINA: PLAN DE ACCIÓN
@@ -726,10 +950,78 @@ function descargarPDF() {
         
         doc.setFontSize(16);
         doc.setFont('helvetica', 'bold');
-        doc.text('4. Plan de Acción Recomendado', margenIzq, y);
+        doc.text('3. Plan de Acción Recomendado', margenIzq, y);
         y += 10;
         
         doc.setFontSize(11);
+        doc.setFont('helvetica', 'normal');
+        
+        // ==================
+        // SECCIÓN DE INICIO RÁPIDO (¡NUEVO!)
+        // ==================
+        doc.setFontSize(13);
+        doc.setFont('helvetica', 'bold');
+        doc.setTextColor(220, 38, 38); // Rojo para destacar urgencia
+        doc.text('>> INICIO RAPIDO: PRIMEROS PASOS CRITICOS', margenIzq, y);
+        doc.setTextColor(0, 0, 0);
+        y += 8;
+        
+        doc.setFontSize(10);
+        doc.setFont('helvetica', 'italic');
+        doc.text('Si solo tiene 2-4 horas esta semana, comience por estas acciones:', margenIzq, y);
+        y += 6;
+        
+        doc.setFont('helvetica', 'normal');
+        doc.setFontSize(10);
+        
+        // Mostrar las 3 recomendaciones más críticas
+        const recomendacionesCriticas = planDeAccion.filter(r => r.criticidad === 'Crítica').slice(0, 3);
+        if (recomendacionesCriticas.length > 0) {
+            recomendacionesCriticas.forEach((rec, index) => {
+                if (y > 270) { doc.addPage(); y = 20; }
+                doc.setFont('helvetica', 'bold');
+                doc.text(`${index + 1}. ${rec.titulo}`, margenIzq + 3, y);
+                y += 5;
+                doc.setFont('helvetica', 'normal');
+                doc.setFontSize(9);
+                const lineaResumen = doc.splitTextToSize(`>> ${rec.que_implementar}`, anchoUtil - 9);
+                doc.text(lineaResumen, margenIzq + 6, y);
+                y += (lineaResumen.length * 4) + 3;
+                doc.setFontSize(10);
+            });
+        } else {
+            // Si no hay críticas, mostrar las 3 primeras del plan
+            const primerasTres = planDeAccion.slice(0, 3);
+            primerasTres.forEach((rec, index) => {
+                if (y > 270) { doc.addPage(); y = 20; }
+                doc.setFont('helvetica', 'bold');
+                doc.text(`${index + 1}. ${rec.titulo}`, margenIzq + 3, y);
+                y += 5;
+                doc.setFont('helvetica', 'normal');
+                doc.setFontSize(9);
+                const lineaResumen = doc.splitTextToSize(`>> ${rec.que_implementar}`, anchoUtil - 9);
+                doc.text(lineaResumen, margenIzq + 6, y);
+                y += (lineaResumen.length * 4) + 3;
+                doc.setFontSize(10);
+            });
+        }
+        
+        y += 8;
+        
+        // Línea separadora
+        doc.setDrawColor(203, 213, 225);
+        doc.line(margenIzq, y, margenDer, y);
+        y += 12;
+        
+        // ==================
+        // TÍTULO DE PLAN COMPLETO
+        // ==================
+        doc.setFontSize(13);
+        doc.setFont('helvetica', 'bold');
+        doc.text('Plan de Implementación Completo por Fases', margenIzq, y);
+        y += 10;
+        
+        doc.setFontSize(10);
         doc.setFont('helvetica', 'normal');
         
         // Agrupar plan por fases
@@ -749,14 +1041,23 @@ function descargarPDF() {
             doc.text(`Fase ${fase}: ${obtenerNombreFase(parseInt(fase))}`, margenIzq, y); // Llama a la función local
             y += 8;
             
-            doc.setFont('helvetica', 'normal');
             doc.setFontSize(10);
+            doc.setFont('helvetica', 'normal');
+            doc.setTextColor(100, 100, 100);
+            doc.text(`${recomendacionesFase.length} control(es) a implementar`, margenIzq, y);
+            doc.setTextColor(0, 0, 0);
+            y += 10;
             
+            // --- INICIO DE LA MODIFICACIÓN: Imprimir campo 'pasos' correctamente ---
+            
+            // Si la fase NO tiene recomendaciones, mostrar mensaje
             if (recomendacionesFase.length === 0) {
+                doc.setFontSize(10);
                 doc.setFont('helvetica', 'italic');
-                doc.text('No hay recomendaciones para esta fase.', margenIzq + 3, y);
+                doc.setTextColor(150, 150, 150);
+                doc.text('No hay controles pendientes en esta fase.', margenIzq + 3, y);
+                doc.setTextColor(0, 0, 0);
                 y += 10;
-                return; // Siguiente fase
             }
 
             
@@ -794,7 +1095,19 @@ function descargarPDF() {
                 doc.text(lineas, margenIzq + 9, y);
                 y += (lineas.length * 4) + 5; // Ajustamos el 'y' según las líneas
 
-                // 2. PASOS SUGERIDOS (¡NUEVO!)
+                // 2. POR QUÉ ES IMPORTANTE (¡NUEVO!)
+                if (y > 260) { doc.addPage(); y = 20; }
+                
+                doc.setFont('helvetica', 'bold');
+                doc.text('Por qué es importante:', margenIzq + 6, y);
+                y += 5;
+                
+                doc.setFont('helvetica', 'normal');
+                lineas = doc.splitTextToSize(recomendacion.por_que, anchoUtil - 9);
+                doc.text(lineas, margenIzq + 9, y);
+                y += (lineas.length * 4) + 5;
+
+                // 3. PASOS SUGERIDOS
                 if (y > 260) { doc.addPage(); y = 20; } 
                 
                 doc.setFont('helvetica', 'bold');
@@ -817,7 +1130,7 @@ function descargarPDF() {
                 y += 4; // Espacio extra
                 doc.setFontSize(10);
                 
-                // 3. ESTIMACIÓN
+                // 4. ESTIMACIÓN
                 if (y > 270) { doc.addPage(); y = 20; }
                 doc.setFontSize(9);
                 doc.setFont('helvetica', 'bold');
@@ -827,8 +1140,36 @@ function descargarPDF() {
                 let estimacionStr = `Estimación: ${recomendacion.estimacion.tiempo} | ${recomendacion.estimacion.esfuerzo}`;                                
                 doc.text(estimacionStr, margenIzq + 6, y);
                 doc.setTextColor(0, 0, 0);
-                y += 10; // Más espacio entre recomendaciones
+                y += 6;
                 
+                doc.setFontSize(10);
+                
+                // 5. RECURSOS RECOMENDADOS (¡NUEVO!)
+                if (recomendacion.recursos && recomendacion.recursos.length > 0) {
+                    if (y > 265) { doc.addPage(); y = 20; }
+                    
+                    doc.setFont('helvetica', 'bold');
+                    doc.setFontSize(9);
+                    doc.setTextColor(0, 100, 0); // Verde oscuro para destacar
+                    doc.text('>> Recursos recomendados:', margenIzq + 6, y);
+                    doc.setTextColor(0, 0, 0);
+                    y += 5;
+                    
+                    doc.setFont('helvetica', 'normal');
+                    doc.setFontSize(9);
+                    recomendacion.recursos.forEach(recurso => {
+                        if (y > 275) { 
+                            doc.addPage(); 
+                            y = 20; 
+                        }
+                        lineas = doc.splitTextToSize(`• ${recurso}`, anchoUtil - 9);
+                        doc.text(lineas, margenIzq + 9, y);
+                        y += (lineas.length * 4) + 1;
+                    });
+                    y += 4;
+                }
+                
+                y += 6; // Más espacio entre recomendaciones
                 doc.setFontSize(10);
             });
             
@@ -885,6 +1226,16 @@ function extraerContextoOrganizacional(respuestas) {
     
     const empleados = empleadosMap[respuestas['P0.3']] || 10;
     
+    // NUEVO: Mapear prioridad (P5.2) a tiempo estimado de implementación
+    const prioridadATiempo = {
+        'Muy Alta': '3 meses',
+        'Alta': '6 meses',
+        'Media': '12 meses',
+        'Baja': '18+ meses'
+    };
+    
+    const tiempoEstimado = prioridadATiempo[respuestas['P5.2']] || '12 meses';
+    
     return {
         empresa: respuestas['P0.1'] || 'No especificado',
         sector: respuestas['P0.2'] || 'No especificado',
@@ -892,7 +1243,8 @@ function extraerContextoOrganizacional(respuestas) {
         facturacion: respuestas['P0.4'] || 'No especificado',
         tecnologias: respuestas['P0.5'] || [],
         rto: respuestas['P5.1'] || 'No evaluado',
-        tiempo_implementacion: respuestas['P5.2'] || '12 meses',
+        tiempo_implementacion: tiempoEstimado,  // CAMBIADO: ahora se mapea desde prioridad
+        prioridad_usuario: respuestas['P5.2'] || 'Media',  // NUEVO: guardar la prioridad original
         incidentes: respuestas['P5.3'] || 'No'
     };
 }

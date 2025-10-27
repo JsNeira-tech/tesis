@@ -148,7 +148,7 @@
                         </label>
                         <div class="checkbox-group">
                             <label class="checkbox-label">
-                                <input type="checkbox" name="P0.5" value="Correo electrónico corporativo">
+                                <input type="checkbox" name="P0.5" value="Correo electrónico corporativo" required>
                                 Correo electrónico corporativo
                             </label>
                             <label class="checkbox-label">
@@ -172,26 +172,25 @@
                                 Software crítico de negocio (ERP, CRM, contabilidad)
                             </label>
                             <label class="checkbox-label">
-                                <input type="checkbox" name="P0.5" value="Servicios en la nube (Drive, OneDrive, AWS)">
-                                Servicios en la nube (Drive, OneDrive, AWS)
+                                <input type="checkbox" name="P0.5" value="Servicios de almacenamiento o colaboración en la nube">
+                                Servicios de almacenamiento o colaboración en la nube (Drive, OneDrive, AWS)
                             </label>
                         </div>
                         <div class="help-text" data-control="ID.AM-02">
                             💡 Mapea a: ID.AM-02 (Inventario de software)
                         </div>
                     </div>
-
+                
                 </div>
                 <div class="navigation-buttons">
-                    <button type="button" class="btn btn-secondary" disabled>◀ Anterior</button>
                     <button type="button" class="btn btn-primary" onclick="siguienteSección(1)">Siguiente ▶</button>
                 </div>
             </section>
 
             <section class="section" id="section-1" style="display: none;">
                 <div class="section-header">
-                    <h2>Sección 1: Gobernanza</h2>
-                    <p>Fundamentos organizacionales de ciberseguridad (Fase 1)</p>
+                    <h2>Sección 1: Gobernanza (Fase 1)</h2>
+                    <p>Fundamentos organizacionales de la ciberseguridad</p>
                 </div>
 
                 <div class="question-grid">
@@ -227,7 +226,7 @@
                             <option value="Políticas completas">Tenemos políticas completas documentadas y comunicadas</option>
                         </select>
                         <div class="help-text" data-control="GV.PO-01">
-                            💡 Mapea a: GV.PO-01 (Establecer y comunicar políticas)
+                            💡 Mapea a: GV.PO-01 (Establecer políticas)
                         </div>
                     </div>
 
@@ -248,20 +247,22 @@
                         </div>
                     </div>
 
+                    <!-- CORREGIDO: P1.4 con nuevas opciones -->
                     <div class="question">
                         <label for="P1.4">
                             <span class="question-number">P1.4</span>
-                            ¿Cuánta pérdida de datos o tiempo de inactividad podría tolerar? <span class="required">*</span>
+                            ¿Cuánto tiempo MÁXIMO podría estar su empresa SIN ACCESO a sus sistemas/información clave antes de que el impacto sea CRÍTICO para el negocio? <span class="required">*</span>
                         </label>
                         <select id="P1.4" name="P1.4" class="input-select" required>
                             <option value="">Seleccione opción</option>
-                            <option value="No evaluado">No lo hemos evaluado</option>
-                            <option value="Menos de 4 horas">Menos de 4 horas de inactividad sería crítico</option>
-                            <option value="1 día">1 día de inactividad sería manejable</option>
-                            <option value="Más de 1 día">Más de 1 día no sería un problema grave</option>
+                            <option value="No lo hemos evaluado">No lo hemos evaluado / No estoy seguro</option>
+                            <option value="Menos de 4 horas">Menos de 4 horas (Impacto casi inmediato)</option>
+                            <option value="Entre 4 horas y 1 día">Entre 4 horas y 1 día hábil (Podemos operar manualmente un poco)</option>
+                            <option value="Entre 1 y 3 días">Entre 1 y 3 días hábiles (Tenemos alternativas temporales)</option>
+                            <option value="Más de 3 días">Más de 3 días hábiles (No es tan urgente recuperar el acceso)</option>
                         </select>
                         <div class="help-text" data-control="GV.RM-02">
-                            💡 Mapea a: GV.RM-02 (Determinar tolerancia al riesgo)
+                            💡 Mapea a: GV.RM-02 (Tolerancia al riesgo)
                         </div>
                     </div>
                 
@@ -274,8 +275,8 @@
 
             <section class="section" id="section-2" style="display: none;">
                 <div class="section-header">
-                    <h2>Sección 2: Visibilidad y Capacitación</h2>
-                    <p>Conocimiento de activos y factor humano (Fase 2)</p>
+                    <h2>Sección 2: Visibilidad y Capacitación (Fase 2)</h2>
+                    <p>Conocimiento de activos y concientización del personal</p>
                 </div>
 
                 <div class="question-grid">
@@ -288,19 +289,19 @@
                         <select id="P2.1" name="P2.1" class="input-select" required>
                             <option value="">Seleccione opción</option>
                             <option value="No tenemos inventario">No tenemos inventario</option>
-                            <option value="Lista desactualizada">Lista básica en papel/Excel desactualizada (>6 meses)</option>
-                            <option value="Inventario digital">Inventario digital actualizado (<6 meses)</option>
+                            <option value="Lista desactualizada">Lista básica en papel/Excel (&gt;6 meses)</option>
+                            <option value="Inventario digital">Inventario digital actualizado (&lt;6 meses)</option>
                             <option value="Inventario automatizado">Inventario automatizado con responsables asignados</option>
                         </select>
                         <div class="help-text" data-control="ID.AM-01">
-                            💡 Mapea a: ID.AM-01 (Inventario de hardware)
+                            💡 Mapea a: ID.AM-01 (Inventario hardware)
                         </div>
                     </div>
 
                     <div class="question">
                         <label for="P2.2">
                             <span class="question-number">P2.2</span>
-                            ¿Tiene inventario actualizado de software y servicios críticos? <span class="required">*</span>
+                            ¿Tiene inventario actualizado de software y servicios críticos que utiliza? <span class="required">*</span>
                         </label>
                         <select id="P2.2" name="P2.2" class="input-select" required>
                             <option value="">Seleccione opción</option>
@@ -310,10 +311,11 @@
                             <option value="Inventario automatizado">Inventario automatizado con licencias y vencimientos</option>
                         </select>
                         <div class="help-text" data-control="ID.AM-02">
-                            💡 Mapea a: ID.AM-02 (Inventario de software)
+                            💡 Mapea a: ID.AM-02 (Inventario software)
                         </div>
                     </div>
 
+                    <!-- CORREGIDO: P2.3 con nuevas opciones -->
                     <div class="question">
                         <label for="P2.3">
                             <span class="question-number">P2.3</span>
@@ -321,11 +323,11 @@
                         </label>
                         <select id="P2.3" name="P2.3" class="input-select" required>
                             <option value="">Seleccione opción</option>
-                            <option value="No es necesario">Considero que no es necesario</option>
-                            <option value="Información para leer">Les dimos información para leer</option>
-                            <option value="Charla">Recibieron una charla de sensibilización</option>
-                            <option value="Curso">Fueron a un curso de varios días</option>
-                            <option value="Requisito contratación">Al contratar requerimos formación previa en seguridad</option>
+                            <option value="No, no se ha realizado ninguna capacitación">No, no se ha realizado ninguna capacitación formal o informal</option>
+                            <option value="material informativo para lectura">Sí, se les entregó material informativo para lectura (guías, correos)</option>
+                            <option value="charla o presentación breve">Sí, recibieron una charla o presentación breve de sensibilización (1-2 horas)</option>
+                            <option value="curso o taller más extenso">Sí, participaron en un curso o taller más extenso (varias horas o días)</option>
+                            <option value="capacitaciones de forma regular">Sí, realizamos capacitaciones de forma regular/continua</option>
                         </select>
                         <div class="help-text" data-control="PR.AT-01">
                             💡 Mapea a: PR.AT-01 (Capacitación del personal)
@@ -358,8 +360,8 @@
 
             <section class="section" id="section-3" style="display: none;">
                 <div class="section-header">
-                    <h2>Sección 3: Protección Técnica</h2>
-                    <p>Controles técnicos de seguridad (Fase 3)</p>
+                    <h2>Sección 3: Protección Técnica (Fase 3)</h2>
+                    <p>Controles técnicos de seguridad implementados</p>
                 </div>
 
                 <div class="question-grid">
@@ -367,7 +369,7 @@
                     <div class="question">
                         <label for="P3.1">
                             <span class="question-number">P3.1</span>
-                            ¿Cómo gestiona las cuentas de usuario cuando alguien ingresa o se va? <span class="required">*</span>
+                            ¿Cómo gestiona las cuentas de usuario cuando alguien ingresa o se va de la empresa? <span class="required">*</span>
                         </label>
                         <select id="P3.1" name="P3.1" class="input-select" required>
                             <option value="">Seleccione opción</option>
@@ -377,7 +379,7 @@
                             <option value="Proceso formal">Proceso formal documentado (creación y eliminación inmediata)</option>
                         </select>
                         <div class="help-text" data-control="PR.AA-01">
-                            💡 Mapea a: PR.AA-01 (Gestión de identidades y credenciales)
+                            💡 Mapea a: PR.AA-01 (Gestión identidades y credenciales)
                         </div>
                     </div>
 
@@ -401,7 +403,7 @@
                     <div class="question">
                         <label for="P3.3">
                             <span class="question-number">P3.3</span>
-                            ¿Con qué frecuencia realiza copias de seguridad (backups)? <span class="required">*</span>
+                            ¿Con qué frecuencia realiza copias de seguridad (backups) de información crítica? <span class="required">*</span>
                         </label>
                         <select id="P3.3" name="P3.3" class="input-select" required>
                             <option value="">Seleccione opción</option>
@@ -419,14 +421,14 @@
                     <div class="question">
                         <label for="P3.4">
                             <span class="question-number">P3.4</span>
-                            ¿Con qué frecuencia actualiza software y sistemas (parches)? <span class="required">*</span>
+                            ¿Con qué frecuencia actualiza el software y sistemas operativos (parches)? <span class="required">*</span>
                         </label>
                         <select id="P3.4" name="P3.4" class="input-select" required>
                             <option value="">Seleccione opción</option>
                             <option value="Nunca">Nunca</option>
                             <option value="De vez en cuando">De vez en cuando</option>
-                            <option value="Cuando avisan">Cuando me avisa el informático o fabricante</option>
-                            <option value="Al día">Estamos al día en todas las actualizaciones</option>
+                            <option value="Cuando avisan">Cuando me avisa el informático o el fabricante</option>
+                            <option value="Al día">Estamos al día en todas las actualizaciones disponibles</option>
                         </select>
                         <div class="help-text" data-control="PR.PS-02">
                             💡 Mapea a: PR.PS-02 (Mantenimiento software - parches)
@@ -442,8 +444,8 @@
 
             <section class="section" id="section-4" style="display: none;">
                 <div class="section-header">
-                    <h2>Sección 4: Detección y Respuesta</h2>
-                    <p>Capacidades de respuesta ante incidentes (Fase 4)</p>
+                    <h2>Sección 4: Detección y Respuesta (Fase 4)</h2>
+                    <p>Capacidades de gestión de incidentes</p>
                 </div>
 
                 <div class="question-grid">
@@ -451,7 +453,7 @@
                     <div class="question">
                         <label for="P4.1">
                             <span class="question-number">P4.1</span>
-                            ¿Tiene un plan documentado para responder a incidentes? <span class="required">*</span>
+                            ¿Tiene un plan documentado para responder a incidentes de seguridad? <span class="required">*</span>
                         </label>
                         <select id="P4.1" name="P4.1" class="input-select" required>
                             <option value="">Seleccione opción</option>
@@ -495,7 +497,7 @@
                             <option value="Procedimiento documentado">Tenemos procedimiento documentado de contención</option>
                         </select>
                         <div class="help-text" data-control="RS.MI-01">
-                            💡 Mapea ea a: RS.MI-01 (Contener incidentes)
+                            💡 Mapea a: RS.MI-01 (Contener incidentes)
                         </div>
                     </div>
 
@@ -531,6 +533,7 @@
 
                 <div class="question-grid">
 
+                    <!-- CORREGIDO: P5.1 con opción "No lo hemos evaluado" agregada y valores ajustados -->
                     <div class="question">
                         <label for="P5.1">
                             <span class="question-number">P5.1</span>
@@ -538,9 +541,10 @@
                         </label>
                         <select id="P5.1" name="P5.1" class="input-select" required>
                             <option value="">Seleccione opción</option>
+                            <option value="No lo hemos evaluado">No lo hemos evaluado / No estoy seguro</option>
                             <option value="Menos de 4 horas">Menos de 4 horas</option>
-                            <option value="4 horas - 1 día">Entre 4 horas y 1 día</option>
-                            <option value="1-3 días">Entre 1 y 3 días</option>
+                            <option value="Entre 4 horas y 1 día">Entre 4 horas y 1 día</option>
+                            <option value="Entre 1 y 3 días">Entre 1 y 3 días</option>
                             <option value="Más de 3 días">Más de 3 días (no es crítico)</option>
                         </select>
                         <div class="help-text" data-control="">
@@ -548,17 +552,18 @@
                         </div>
                     </div>
 
+                    <!-- CORREGIDO: P5.2 COMPLETAMENTE CAMBIADA - Ahora pregunta sobre PRIORIDAD en lugar de TIEMPO -->
                     <div class="question">
                         <label for="P5.2">
                             <span class="question-number">P5.2</span>
-                            ¿Cuánto tiempo tiene disponible para implementar mejoras de seguridad? <span class="required">*</span>
+                            ¿Qué prioridad le asignaría actualmente a la implementación de mejoras de ciberseguridad, considerando sus otras tareas operativas? <span class="required">*</span>
                         </label>
                         <select id="P5.2" name="P5.2" class="input-select" required>
                             <option value="">Seleccione opción</option>
-                            <option value="3 meses">3 meses (urgente)</option>
-                            <option value="6 meses">6 meses (normal)</option>
-                            <option value="12 meses">12 meses (gradual)</option>
-                            <option value="18+ meses">18+ meses (largo plazo)</option>
+                            <option value="Muy Alta">Dispuesto/a a dedicar tiempo significativo ahora</option>
+                            <option value="Alta">Podemos dedicar algunas horas a la semana</option>
+                            <option value="Media">Podemos avanzar de forma gradual, pocas horas al mes</option>
+                            <option value="Baja">Actualmente no podemos dedicarle tiempo activamente</option>
                         </select>
                         <div class="help-text" data-control="">
                             💡 Influye en: Cronograma del plan de acción
@@ -574,7 +579,7 @@
                             <option value="">Seleccione opción</option>
                             <option value="No">No</option>
                             <option value="No estoy seguro">No estoy seguro</option>
-                            <option value="Sí">Sí (favor especificar en comentarios)</option>
+                            <option value="Sí">Sí</option>
                         </select>
                         <div class="help-text" data-control="">
                             💡 Influye en: Priorización de controles reactivos (RESPOND/RECOVER)

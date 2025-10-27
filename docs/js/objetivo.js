@@ -99,13 +99,25 @@ function calcularFaseObjetivoBase(empleados) {
  * @returns {number} - Fase ajustada
  */
 function ajustarPorCriticidad(faseBase, rto) {
-    if (rto === 'Menos de 4 horas') {
+    // ACTUALIZADO: Reconoce las opciones completas del nuevo cuestionario
+    
+    // Alta criticidad: Menos de 4 horas
+    if (rto === 'Menos de 4 horas' || rto.includes('Menos de 4 horas')) {
         console.log('⚠️ Alta criticidad (RTO < 4h) → Ajuste: +1 fase');
         return faseBase + 1;
-    } else if (rto === 'Más de 3 días') {
+    } 
+    // Baja criticidad: Más de 3 días
+    else if (rto === 'Más de 3 días' || rto.includes('Más de 3 días')) {
         console.log('ℹ️ Baja criticidad (RTO > 3 días) → Ajuste: -0.5 fases');
         return faseBase - 0.5;
-    } else {
+    }
+    // No evaluado: Sin ajuste (tratado como normal)
+    else if (rto === 'No lo hemos evaluado' || rto === 'No evaluado' || rto.includes('No lo hemos evaluado')) {
+        console.log('⚠️ RTO no evaluado → Sin ajuste (se recomienda evaluar)');
+        return faseBase;
+    }
+    // Criticidad normal: Entre 4 horas y 3 días
+    else {
         console.log('ℹ️ Criticidad normal → Sin ajuste');
         return faseBase;
     }
