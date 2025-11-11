@@ -111,8 +111,7 @@ function priorizarBrechas(brechas, funcionesPriorizadas) {
     const brechasConPrioridad = brechas.map(brecha => {
         const puntajePrioridad = calcularPuntajePrioridad(brecha, funcionesPriorizadas);
         return {
-            ...brecha,
-            puntaje_prioridad: puntajePrioridad
+            ...brecha, puntaje_prioridad: puntajePrioridad
         };
     });
     
